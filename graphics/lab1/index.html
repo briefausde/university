@@ -18,6 +18,12 @@
 			let camera, scene, renderer;
 			let controls, water, sun, mesh;
 
+			const parameters = {
+				inclination: 0.49,
+				azimuth: 0.205,
+				isWireframe: false
+			};
+
 			init();
 			animate();
 
@@ -68,10 +74,6 @@
 				skyUniforms[ 'rayleigh' ].value = 2;
 				skyUniforms[ 'mieCoefficient' ].value = 0.005;
 				skyUniforms[ 'mieDirectionalG' ].value = 0.8;
-				const parameters = {
-					inclination: 0.49,
-					azimuth: 0.205
-				};
 
 				const pmremGenerator = new THREE.PMREMGenerator( renderer );
 				function updateSun() {
@@ -92,9 +94,15 @@
 					color: 0x1da2d8,
 					metalness: 0,
 					roughness: 0,
-				} );
+					wireframe: parameters.isWireframe,
+				});
 				mesh = new THREE.Mesh( geometry, material );
 				scene.add( mesh );
+
+				function updateMaterial() {
+					material.wireframe = parameters.isWireframe;
+					material.needsUpdate = true;
+				}
 
 				// View
 				controls = new OrbitControls( camera, renderer.domElement );
@@ -106,10 +114,11 @@
 
 				// GUI
 				const gui = new GUI();
-				const folderSky = gui.addFolder( 'Sky' );
-				folderSky.add( parameters, 'inclination', 0, 0.5, 0.0001 ).onChange( updateSun );
-				folderSky.add( parameters, 'azimuth', 0, 1, 0.0001 ).onChange( updateSun );
-				folderSky.open();
+				const properties = gui.addFolder( 'Properties' );
+				properties.add(parameters, 'inclination', 0, 0.5, 0.0001).onChange(updateSun);
+				properties.add(parameters, 'azimuth', 0, 1, 0.0001).onChange(updateSun);
+				properties.add(parameters, 'isWireframe').onChange(updateMaterial);
+				properties.open();
 
 				window.addEventListener( 'resize', onWindowResize, false );
 			}

@@ -24,6 +24,22 @@
 				isWireframe: false
 			};
 
+			const aDrop = (u, v, table) => {
+			  const { PI, cos, sin } = Math;
+			  v = v * 2 * PI;
+			  u = u * 2 * PI - PI;
+			  const a = 0.5;
+			  const b = 0.5;
+			  const sinU = sin(u);
+			  const cosU = cos(u);
+			  const sinV = sin(v);
+			  const cosV = cos(v);
+			  const x = a * (b - cosU) * sinU * cosV;
+			  const y = a * (b - cosU) * sinU * sinV;
+			  const z = cosU;
+			  table.set(x, y, z);
+			};
+
 			init();
 			animate();
 
@@ -89,7 +105,7 @@
 				updateSun();
 
 				// A drop
-				const geometry = new THREE.SphereBufferGeometry( 5, 64, 32 );
+				const geometry = new THREE.ParametricGeometry(aDrop, 50, 50);
 				const material = new THREE.MeshStandardMaterial( {
 					color: 0x1da2d8,
 					metalness: 0,
@@ -97,6 +113,7 @@
 					wireframe: parameters.isWireframe,
 				});
 				mesh = new THREE.Mesh( geometry, material );
+				mesh.scale.set(14, 14, 14)
 				scene.add( mesh );
 
 				function updateMaterial() {
